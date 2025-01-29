@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Adopt {{ pet.animal_name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="email">Your Email:</label>
+        <input type="email" name="email" required>
+        <br>
+        <label for="phone">Phone Number:</label>
+        <input type="text" name="phone" required>
+        <br>
+        <label for="address">Address:</label>
+        <textarea name="address" required></textarea>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+{% endblock %}

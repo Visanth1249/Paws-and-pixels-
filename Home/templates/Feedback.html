@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback Page</title>
+</head>
+<body>
+    <h1>Feedback Page</h1>
+    <p>Feel free to leave us your feedback:</p>
+    <form action="{% url 'submit-feedback' %}" method="post">
+        {% csrf_token %}
+        <textarea name="feedback" rows="4" cols="50"></textarea>
+        <br>
+        <input type="submit" value="Submit Feedback">
+    </form>
+</body>
+</html>
+{% endblock %}

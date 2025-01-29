@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You for Your Concern</title>
+</head>
+<body>
+    <h1>Sorry for the Inconvenience</h1>
+    <p>We have received your concern and will look into it as soon as possible. Thank you for your patience!</p>
+
+    <!-- Home Button -->
+    <a href="{% url 'home' %}">
+        <button>Back to Home</button>
+    </a>
+</body>
+</html>
+{% endblock %}

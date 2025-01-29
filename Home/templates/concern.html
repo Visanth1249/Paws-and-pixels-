@@ -1,0 +1,23 @@
+<!-- concern.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concern</title>
+</head>
+<body>
+    <h1>Raise Your Concern</h1>
+    <p>Feel free to raise any concerns you have:</p>
+    <form action="{% url 'concern' %}" method="post">
+        {% csrf_token %}
+        <textarea name="concern" rows="4" cols="50"></textarea>
+        <br>
+        <input type="submit" value="Submit Concern">
+    </form>
+</body>
+</html>
+{% endblock %}

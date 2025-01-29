@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .adoptions-container {
+        background-color: #f5f5f5;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .adoptions-container h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .adoptions-container ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .adoptions-container li {
+        background-color: #fff;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .adoptions-container li:hover {
+        background-color: #f0f0f0;
+    }
+
+    .adoption-category {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .add-adoption-btn {
+        display: inline-block;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        margin-top: 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 1.2em;
+    }
+
+    .add-adoption-btn:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<div class="container">
+    <div class="adoptions-container">
+        <h2>Available Pets for Adoption</h2>
+
+        <!-- Show "Add Adoption" button only for superusers -->
+        {% if request.user.is_superuser %}
+            <a href="{% url 'add_adoption' %}" class="add-adoption-btn">Add New Adoption</a>
+        {% endif %}
+
+        <ul>
+            {% for pet in adoptions %}
+            <li>
+                <h3>{{ pet.animal_name }}</h3>
+                <p>Animal Type: {{ pet.animal_type }}</p>
+                <p>{{ pet.description }}</p>
+                <img src="{{ pet.image.url }}" alt="{{ pet.animal_name }}" width="100">
+                <br>
+
+                {% if pet.available %}
+                    <a href="{% url 'adopt_pet' pet.id %}" class="add-adoption-btn">Adopt</a>
+                {% else %}
+                    <span style="color: red; font-weight: bold;">Adopted</span>
+                {% endif %}
+            </li>
+            {% empty %}
+            <p>No pets available for adoption at the moment.</p>
+            {% endfor %}
+        </ul>
+
+
+    </div>
+</div>
+{% endblock %}

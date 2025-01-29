@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Paws and Pixels{% endblock %}</title>
+
+    <!-- jQuery for AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        nav {
+            background-color: #4caf50;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        nav ul li {
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .dropdown-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-container select {
+            margin-left: 10px;
+            padding: 5px;
+        }
+
+        .dropdown-container label {
+            color: white;
+        }
+
+        /* Cart icon styling */
+        .cart-icon {
+            font-size: 1.2rem;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <a href="{% url 'home' %}" style="color: white; text-decoration: none;">Paws and Pixels</a>
+        </div>
+
+        <ul>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'contact' %}">Contact Us</a></li>
+
+                <!-- About + Cart -->
+                <li><a href="{% url 'about' %}">About</a></li>
+
+                <li>
+                    <a href="{% url 'view_cart' %}" title="View Cart">
+                        🛒 Cart (<span id="cart-count">0</span>)
+                    </a>
+                </li>
+
+                <!-- Accessories & Adoptions Dropdown -->
+                <li class="dropdown-container">
+                    <label for="dropdown">What do you need to do?</label>
+                    <select id="dropdown" onchange="navigateToPage(this.value)">
+                        <option value="">Select</option>
+                        <option value="{% url 'accessories' %}">Accessories</option>
+                        <option value="{% url 'adoptions' %}">Adoptions</option>
+                    </select>
+                </li>
+
+                <!-- Feedback Dropdown -->
+                <li class="dropdown-container">
+                    <label for="feedback-dropdown">Feedback</label>
+                    <select id="feedback-dropdown" onchange="navigateToPage(this.value)">
+                        <option value="">Select</option>
+                        <option value="{% url 'feedback' %}">Give Feedback</option>
+                        <option value="{% url 'concern' %}">Raise a Concern</option>
+                    </select>
+                </li>
+
+                <!-- Logout -->
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+
+            {% else %}
+                <!-- If not authenticated, show login, register, and contact us -->
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+                <li><a href="{% url 'contact' %}">Contact Us</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Paws and Pixels. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function navigateToPage(value) {
+            if (value) {
+                window.location.href = value;
+            }
+        }
+
+        $(document).ready(function() {
+            // Fetch the cart count dynamically
+            $.ajax({
+                url: "{% url 'get_cart_count' %}",
+                method: "GET",
+                success: function(response) {
+                    $("#cart-count").text(response.cart_count);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
