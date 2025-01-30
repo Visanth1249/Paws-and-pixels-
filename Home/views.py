@@ -9,20 +9,64 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import CartItem, Order
-
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Cart, CartItem, Accessory
+from django.core.mail import send_mail
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Adoption
+from django.contrib import messages
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import CartItem, Order  # Assuming you have CartItem and Order models
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Cart, CartItem, Order
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Accessory
+from .forms import AccessoryForm
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.conf import settings
 
-from django.shortcuts import get_object_or_404, redirect
-from .models import Cart, Accessory
 
+# View to list all accessories
 
+def place_order(request):
+    if request.method == "POST":
+        user = request.user
+        cart = Cart.objects.get(user=user)
+        cart_items = CartItem.objects.filter(cart=cart)
+
+        if not cart_items:
+            messages.error(request, "Your cart is empty!")
+            return redirect("cart")
+
+        # Create an order
+        order = Order.objects.create(
+            user=user,
+            email=user.email,
+            total_price=sum(item.accessory.price * item.quantity for item in cart_items),
+        )
+
+        try:
+            order.finalize_order(cart_items)
+            messages.success(request, "Order placed successfully!")
+        except ValueError as e:
+            messages.error(request, str(e))
+            return redirect("cart")
+
+        return redirect("order_success")
 
 def order_success(request):
     return render(request, 'order_success.html', {'message': 'Your order was successful!'})
 
-from django.http import JsonResponse
 
 @login_required
 def add_to_cart(request, accessory_id):
@@ -46,10 +90,6 @@ def get_cart_count(request):
     return JsonResponse({"cart_count": cart_count})
 
 
-from django.core.mail import send_mail
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Adoption
-from django.contrib import messages
 
 def adopt_pet(request, pet_id):
     pet = get_object_or_404(Adoption, id=pet_id)
@@ -88,13 +128,7 @@ def view_cart(request):
 
     return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price})
 
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import CartItem, Order  # Assuming you have CartItem and Order models
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import Cart, CartItem, Order
+
 
 def checkout(request):
     cart, created = Cart.objects.get_or_create(user=request.user)  # Get user's cart
@@ -126,7 +160,6 @@ def checkout(request):
             fail_silently=False,
         )
 
-        # ✅ Clear the cart after successful checkout
         cart_items.delete()  # Delete all items from the cart
         cart.delete()  # Remove the cart itself
 
@@ -166,16 +199,54 @@ def add_adoption(request):
 
 
 
+
+def accessories_list(request):
+    accessories = Accessory.objects.all()
+    return render(request, 'accessories.html', {'accessories': accessories})
+
+# View to add a new accessory (only for superusers)
 @login_required
 def add_accessory(request):
+    if not request.user.is_superuser:
+        return redirect('accessories_list')
+
     if request.method == 'POST':
-        form = AccessoryForm(request.POST, request.FILES)  # Handle file uploads
+        form = AccessoryForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()  # Save the accessory to the database
-            return redirect('accessories')  # Redirect to the accessories list page
+            form.save()
+            return redirect('accessories_list')
     else:
         form = AccessoryForm()
-    return render(request, 'Add_accessory.html', {'form': form})
+
+    return render(request, 'add_accessory.html', {'form': form})
+
+# View to delete an accessory (only for superusers)
+@login_required
+def delete_accessory(request, accessory_id):
+    if not request.user.is_superuser:
+        return redirect('accessories_list')
+
+    accessory = get_object_or_404(Accessory, id=accessory_id)
+    accessory.delete()
+    return redirect('accessories_list')
+
+# View to edit an accessory (only for superusers)
+@login_required
+def edit_accessory(request, accessory_id):
+    if not request.user.is_superuser:
+        return redirect('accessories_list')
+
+    accessory = get_object_or_404(Accessory, id=accessory_id)
+
+    if request.method == 'POST':
+        form = AccessoryForm(request.POST, request.FILES, instance=accessory)
+        if form.is_valid():
+            form.save()
+            return redirect('accessories_list')
+    else:
+        form = AccessoryForm(instance=accessory)
+
+    return render(request, 'edit_accessory.html', {'form': form, 'accessory': accessory})
 
 
 def home(request):
@@ -250,9 +321,6 @@ def loginsuccess(request):
     """
     return render(request, 'loginsuccess.html')
 
-from django.core.mail import send_mail
-from django.shortcuts import render, redirect
-from django.contrib import messages
 
 def contact(request):
     if request.method == "POST":
@@ -276,11 +344,6 @@ def contact(request):
         return redirect("contact")
 
     return render(request, "contactus.html")
-
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.conf import settings
 
 def feedback_view(request):
     if request.method == 'POST':
@@ -314,6 +377,8 @@ def adoptions(request):
     return render(request, 'adoptions.html', {'adoptions': adoptions})
 
 
+
+
 @login_required
 def feedback(request):
     """
@@ -329,10 +394,6 @@ def submit_feedback(request):
         feedback_text = request.POST.get('feedback')
         # Save feedback logic here (if needed)
         return redirect('feedback')
-
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.conf import settings
 
 def concern(request):
     if request.method == 'POST':

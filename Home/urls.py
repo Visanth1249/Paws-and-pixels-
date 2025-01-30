@@ -5,6 +5,10 @@ from .views import checkout, order_success
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import feedback_view
+from .views import delete_accessory
+from django.urls import path
+from .views import accessories_list, add_accessory, delete_accessory, edit_accessory
+
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -32,6 +36,12 @@ urlpatterns = [
     path("order-success/", order_success, name="order_success"),
     path('adopt/<int:pet_id>/', views.adopt_pet, name='adopt_pet'),
     path('submit-feedback/', feedback_view, name='submit-feedback'),
+    path('delete_accessory/<int:accessory_id>/', delete_accessory, name='delete_accessory'),
+    path('accessories/', accessories_list, name='accessories_list'),
+    path('accessories/add/', add_accessory, name='add_accessory'),
+    path('accessories/delete/<int:accessory_id>/', delete_accessory, name='delete_accessory'),
+    path('accessories/edit/<int:accessory_id>/', edit_accessory, name='edit_accessory'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -7,13 +7,17 @@
     function showAccessoryImage(imageUrl) {
         var imageContainer = document.getElementById('accessory-image-container');
         imageContainer.innerHTML = '';
-        if (imageUrl) {
+        if (imageUrl && imageUrl !== '/media/default_image.jpg') {
             var accessoryImage = document.createElement('img');
             accessoryImage.src = imageUrl;
             accessoryImage.style.width = "300px";
             accessoryImage.style.height = "auto";
             accessoryImage.style.marginTop = "10px";
+            accessoryImage.style.borderRadius = "5px";
+            accessoryImage.alt = "Accessory Image";
             imageContainer.appendChild(accessoryImage);
+        } else {
+            imageContainer.innerHTML = "<p style='color:gray;'>No Image Available</p>";
         }
     }
 
@@ -70,6 +74,7 @@
         border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         cursor: pointer;
+        transition: background-color 0.3s;
     }
 
     .accessories-container li:hover {
@@ -85,6 +90,11 @@
         height: auto;
         border-radius: 5px;
         margin-top: 5px;
+        transition: transform 0.2s;
+    }
+
+    .accessory-img:hover {
+        transform: scale(1.1);
     }
 
     .add-accessory-btn {
@@ -114,6 +124,42 @@
     .add-to-cart-btn:hover {
         background-color: #0056b3;
     }
+
+    .sold-out {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+    .delete-btn {
+        margin-top: 10px;
+        padding: 5px 10px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .delete-btn:hover {
+        background-color: #a71d2a;
+    }
+
+    .edit-btn {
+        margin-top: 10px;
+        padding: 5px 10px;
+        background-color: #ffc107;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .edit-btn:hover {
+        background-color: #e0a800;
+    }
+
 </style>
 
 <div class="container">
@@ -132,12 +178,27 @@
                 <h3>{{ accessory.name }}</h3>
                 <p>{{ accessory.description }}</p>
                 <p>Price: ${{ accessory.price }}</p>
+                <p>Stock: {{ accessory.quantity }}</p>
                 <img class="accessory-img"
                      src="{% if accessory.image %}{{ accessory.image.url }}{% else %}/media/default_image.jpg{% endif %}"
                      alt="{{ accessory.name }}">
 
-                {% if not request.user.is_superuser %}
-                    <button class="add-to-cart-btn" data-id="{{ accessory.id }}">Add to Cart</button>
+                {% if accessory.quantity > 0 %}
+                    {% if not request.user.is_superuser %}
+                        <button class="add-to-cart-btn" data-id="{{ accessory.id }}">Add to Cart</button>
+                    {% endif %}
+                {% else %}
+                    <p class="sold-out">Sold Out</p>
+                {% endif %}
+
+                {% if request.user.is_superuser %}
+                    <a href="{% url 'edit_accessory' accessory.id %}">
+                        <button class="edit-btn">Edit</button>
+                    </a>
+                    <form method="post" action="{% url 'delete_accessory' accessory.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-btn">Delete</button>
+                    </form>
                 {% endif %}
             </li>
             {% empty %}

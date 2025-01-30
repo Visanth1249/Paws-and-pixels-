@@ -30,10 +30,11 @@ from .models import Accessory
 class AccessoryForm(forms.ModelForm):
     class Meta:
         model = Accessory
-        fields = ['name', 'description', 'price', 'image']  # Fields to display in the form
+        fields = ['name', 'description', 'price', 'image', 'quantity']  # Added quantity field
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
             'price': forms.NumberInput(attrs={'step': 0.01}),
+            'quantity': forms.NumberInput(attrs={'min': 0}),  # Ensure non-negative quantity
         }
 
 from django import forms
