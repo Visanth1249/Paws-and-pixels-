@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-zy(jkf3$ay&su%x%$4))eb@4xd(n3lpw@(&i^vp7%g%028txwh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["Paws and Pixels.onrender.com"]
+ALLOWED_HOSTS = ['paws-and-pixels.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
