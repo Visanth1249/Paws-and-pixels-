@@ -94,6 +94,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Django Documentation**: For detailed reference and tutorials.
 - **Bootstrap**: For responsive frontend design.
 - **Python Community**: For their constant support and contributions.
-```
 
+THIS PROJECT IS DONE AS A PYTHON FULL STACK DEVELOPMENT COURSE OUTCOME :
+Team Members -> 1)K.Visanth
+                2)P.Lavanya
+                3)B.Gokul
+
+```
 This README will help other developers and users understand the project's structure, how to set it up, and contribute to it if needed. You can save this as `README.md` and add it to your Git repository.
