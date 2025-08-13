@@ -1,6 +1,5 @@
 Here’s a sample `README.md` file for your "Paws and Pixels" project that you can include in your repository:
 
-```markdown
 # Paws and Pixels
 
 **Paws and Pixels** is a comprehensive Pet Adoption and Accessories Management System built using Python and Django. The project is designed to offer a platform for users to adopt pets, browse accessories, and interact with the shelter.
@@ -102,3 +101,4 @@ Team Members -> 1)K.Visanth
 
 ```
 This README will help other developers and users understand the project's structure, how to set it up, and contribute to it if needed. You can save this as `README.md` and add it to your Git repository.
+
